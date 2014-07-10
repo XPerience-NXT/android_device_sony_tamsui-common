@@ -1,4 +1,24 @@
+# Copyright (C) 2012-2014 The CyanogenMod Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# These is the hardware-specific overlay, which points to the location
+# of hardware-specific resource overrides, typically the frameworks and
+# application settings that are stored in resourced.
+
 $(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
+
+COMMON_PATH := device/sony/tamsui-common
 
 DEVICE_PACKAGE_OVERLAYS += device/sony/tamsui-common/overlay
 
@@ -18,49 +38,26 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.wifi.direct.xml:system/etc/permissions/android.hardware.wifi.direct.xml \
     frameworks/native/data/etc/android.hardware.wifi.xml:system/etc/permissions/android.hardware.wifi.xml \
     frameworks/native/data/etc/handheld_core_hardware.xml:system/etc/permissions/handheld_core_hardware.xml \
-    packages/wallpapers/LivePicker/android.software.live_wallpaper.xml:system/etc/permissions/android.software.live_wallpaper.xml
-#    frameworks/native/data/etc/com.stericsson.hardware.fm.receiver.xml:system/etc/permissions/com.stericsson.hardware.fm.receiver.xml \
+    packages/wallpapers/LivePicker/android.software.live_wallpaper.xml:system/etc/permissions/android.software.live_wallpaper.xml \
 
 # Ramdisk
 PRODUCT_COPY_FILES += \
-	device/sony/tamsui-common/prebuilt/sbin/rmt_storage:root/sbin/rmt_storage	\
-	device/sony/tamsui-common/prebuilt/sbin/tad:root/sbin/tad	\
-	device/sony/tamsui-common/prebuilt/sbin/ta_rmt_service:root/sbin/ta_rmt_service	\
-	device/sony/tamsui-common/prebuilt/sbin/wait4tad:root/sbin/wait4tad	\
-	device/sony/tamsui-common/config/init.sony.rc:root/init.sony.rc \
-	device/sony/tamsui-common/config/ueventd.sony.rc:root/ueventd.sony.rc
+    $(COMMON_PATH)/rootdir/init.sony.rc:root/init.sony.rc \
+    $(COMMON_PATH)/rootdir/ueventd.sony.rc:root/ueventd.sony.rc \
+    $(COMMON_PATH)/rootdir/init.recovery.sony.rc:root/init.recovery.sony.rc
 
-# Adreno 200 GPU prebuilt blobs   
+# reboot to recovery
 PRODUCT_COPY_FILES += \
-	device/sony/tamsui-common/prebuilt/etc/firmware/a225p5_pm4.fw:system/etc/firmware/a225p5_pm4.fw	\
-	device/sony/tamsui-common/prebuilt/etc/firmware/a225_pfp.fw:system/etc/firmware/a225_pfp.fw	\
-	device/sony/tamsui-common/prebuilt/etc/firmware/a225_pm4.fw:system/etc/firmware/a225_pm4.fw	\
-	device/sony/tamsui-common/prebuilt/etc/firmware/leia_pfp_470.fw:system/etc/firmware/leia_pfp_470.fw	\
-	device/sony/tamsui-common/prebuilt/etc/firmware/leia_pm4_470.fw:system/etc/firmware/leia_pm4_470.fw	\
-	device/sony/tamsui-common/prebuilt/etc/firmware/yamato_pfp.fw:system/etc/firmware/yamato_pfp.fw	\
-	device/sony/tamsui-common/prebuilt/etc/firmware/yamato_pm4.fw:system/etc/firmware/yamato_pm4.fw	\
-	device/sony/tamsui-common/prebuilt/lib/libc2d2_z180.so:system/lib/libc2d2_z180.so	\
-	device/sony/tamsui-common/prebuilt/lib/libC2D2.so:system/lib/libC2D2.so	\
-	device/sony/tamsui-common/prebuilt/lib/libgsl.so:system/lib/libgsl.so	\
-	device/sony/tamsui-common/prebuilt/lib/libOpenVG.so:system/lib/libOpenVG.so	\
-	device/sony/tamsui-common/prebuilt/lib/libsc-a2xx.so:system/lib/libsc-a2xx.so	\
-	device/sony/tamsui-common/prebuilt/lib/egl/egl.cfg:system/lib/egl/egl.cfg	\
-	device/sony/tamsui-common/prebuilt/lib/egl/eglsubAndroid.so:system/lib/egl/eglsubAndroid.so	\
-	device/sony/tamsui-common/prebuilt/lib/egl/libEGL_adreno200.so:system/lib/egl/libEGL_adreno200.so	\
-	device/sony/tamsui-common/prebuilt/lib/egl/libGLES_android.so:system/lib/egl/libGLES_android.so	\
-	device/sony/tamsui-common/prebuilt/lib/egl/libGLESv1_CM_adreno200.so:system/lib/egl/libGLESv1_CM_adreno200.so	\
-	device/sony/tamsui-common/prebuilt/lib/egl/libGLESv2_adreno200.so:system/lib/egl/libGLESv2_adreno200.so	\
-	device/sony/tamsui-common/prebuilt/lib/egl/libGLESv2S3D_adreno200.so:system/lib/egl/libGLESv2S3D_adreno200.so	\
-	device/sony/tamsui-common/prebuilt/lib/egl/libq3dtools_adreno200.so:system/lib/egl/libq3dtools_adreno200.so	
-
+    $(COMMON_PATH)/rootdir/postrecoveryboot.sh:recovery/root/sbin/postrecoveryboot.sh \
+    $(COMMON_PATH)/rootdir/pre-recovery.sh:root/sbin/pre-recovery.sh
 
 # Common Qualcomm scripts
 PRODUCT_COPY_FILES += \
-    device/sony/tamsui-common/config/init.qcom.efs.sync.sh:system/etc/init.qcom.efs.sync.sh
+    $(COMMON_PATH)/rootdir/system/etc/init.qcom.efs.sync.sh:system/etc/init.qcom.efs.sync.sh
 
 # thermald config
 PRODUCT_COPY_FILES += \
-    device/sony/tamsui-common/config/thermald.conf:system/etc/thermald.conf
+    $(COMMON_PATH)/rootdir/system/etc/thermald.conf:system/etc/thermald.conf
 
 # QCOM Display
 PRODUCT_PACKAGES += \
@@ -78,28 +75,26 @@ PRODUCT_PACKAGES += \
 
 # Audio
 PRODUCT_PACKAGES += \
-    audio.a2dp.default \
-    audio_policy.msm7x27a \
     audio.primary.msm7x27a \
+    audio_policy.msm7x27a \
+    audio.a2dp.default \
     audio.usb.default \
-    audio_policy.conf \
-    libaudio-resampler \
     libaudioutils
 
 PRODUCT_COPY_FILES += \
-    device/sony/tamsui-common/config/media_profiles.xml:system/etc/media_profiles.xml \
-    device/sony/tamsui-common/config/media_codecs.xml:system/etc/media_codecs.xml \
-    device/sony/tamsui-common/config/AudioFilter.csv:system/etc/AudioFilter.csv \
-    device/sony/tamsui-common/config/AutoVolumeControl.txt:system/etc/AutoVolumeControl.txt
+    $(COMMON_PATH)/rootdir/system/etc/audio_policy.conf:system/etc/audio_policy.conf \
+    $(COMMON_PATH)/rootdir/system/etc/media_profiles.xml:system/etc/media_profiles.xml \
+    $(COMMON_PATH)/rootdir/system/etc/media_codecs.xml:system/etc/media_codecs.xml \
+    $(COMMON_PATH)/rootdir/system/etc/AudioFilter.csv:system/etc/AudioFilter.csv \
+    $(COMMON_PATH)/rootdir/system/etc/AutoVolumeControl.txt:system/etc/AutoVolumeControl.txt
 
 # QCOM Power
 PRODUCT_PACKAGES += \
     power.msm7x27a \
 
-# Camera Wrapper
+# Camera
 PRODUCT_PACKAGES += \
-    camera.qcom 
-  
+    camera.msm7x27a  
 
 # Omx
 PRODUCT_PACKAGES += \
@@ -118,7 +113,11 @@ PRODUCT_PACKAGES += \
     libbt-vendor
 	
 PRODUCT_COPY_FILES += \
-    device/sony/tamsui-common/config/bt_vendor.conf:system/etc/bluetooth/bt_vendor.conf
+    $(COMMON_PATH)/rootdir/system/etc/bt_vendor.conf:system/etc/bluetooth/bt_vendor.conf
+
+# Boot Logo
+PRODUCT_COPY_FILES += \
+    $(COMMON_PATH)/boot/$(TARGET_SCREEN_WIDTH)x$(TARGET_SCREEN_HEIGHT).rle:root/logo.rle
 
 # GPS
 PRODUCT_PACKAGES += \
@@ -131,10 +130,6 @@ PRODUCT_PACKAGES += \
 # Misc
 PRODUCT_PACKAGES += \
     com.android.future.usb.accessory
-
-# FmRadio
-#PRODUCT_PACKAGES += \
-#    FmRadioReceiver
 
 # Live Wallpapers
 PRODUCT_PACKAGES += \
@@ -166,13 +161,12 @@ PRODUCT_PROPERTY_OVERRIDES += \
    media.stagefright.enable-fma2dp=true \
    media.stagefright.enable-aac=true \
    media.stagefright.enable-qcp=true \
-   debug.camcorder.disablemeta=1
-   
+   debug.camcorder.disablemeta=1   
 
 # Radio
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.telephony.ril_class=SonyQualcommRIL7x27a \
-    ro.telephony.ril.v3=skipnullaid \
+    ro.telephony.ril.v3=skipnullaid, qcomdsds \
     rild.libpath=/system/lib/libril-qc-1.so \
     rild.libargs=-d/dev/smd0 \
     persist.rild.nitz_plmn= \
@@ -192,10 +186,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.use_data_netmgrd=true \
     persist.data_netmgrd_nint=3 \
     ro.ril.transmitpower=true
-
-# Web Rendering
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.webview.gralloc_unbind=1
 
 # Graphics
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -232,5 +222,5 @@ PRODUCT_PROPERTY_OVERRIDES += \
     wifi.interface=wlan0 \
     wifi.supplicant_scan_interval=30
 
-PRODUCT_PROPERTY_OVERRIDES += \
-    hw.fm.isAnalog=true
+# proprietary side of the board
+$(call inherit-product, vendor/sony/tamsui-common/tamsui-common-vendor.mk)

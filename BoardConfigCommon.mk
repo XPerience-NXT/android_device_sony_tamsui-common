@@ -1,3 +1,25 @@
+# Copyright (C) 2012-2014 The CyanogenMod Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# WARNING: This line must come *before* including the proprietary
+# variant, so that it gets overwritten by the parent (which goes
+# against the traditional rules of inheritance).
+USE_CAMERA_STUB := true
+
+# inherit from the proprietary version
+-include vendor/sony/tamsui-common/BoardConfigVendor.mk
+
 TARGET_SPECIFIC_HEADER_PATH := device/sony/tamsui-common/include
 
 TARGET_NO_BOOTLOADER := true
@@ -6,11 +28,6 @@ BOARD_HAS_NO_MISC_PARTITION := true
 
 # Init
 BOARD_WANTS_EMMC_BOOT := true
-
-# Legacy
-TARGET_QCOM_DISPLAY_VARIANT := legacy
-TARGET_QCOM_AUDIO_VARIANT := legacy
-TARGET_QCOM_MEDIA_VARIANT := legacy
 
 # Platform
 TARGET_BOOTLOADER_BOARD_NAME := tamsui
@@ -29,16 +46,11 @@ TARGET_ARCH_LOWMEM := true
 
 ARCH_ARM_HAVE_TLS_REGISTER := true
 
+COMMON_GLOBAL_CFLAGS += -DANCIENT_GL -DEGL_NEEDS_FNW
 TARGET_GLOBAL_CFLAGS += -mfpu=neon -mfloat-abi=softfp
 TARGET_GLOBAL_CPPFLAGS += -mfpu=neon -mfloat-abi=softfp
 
-COMMON_GLOBAL_CFLAGS += -DSONY_CAMERA -DQCOM_HARDWARE -DQCOM_SONY_HARDWARE -DMR0_AUDIO_BLOB -DANCIENT_GL -DQCOM_BSP_WITH_GENLOCK -Wno-sign-compare -Wno-error -Wno-deprecated -Wno-parentheses -Wno-ignored-qualifiers
-COMMON_GLOBAL_CFLAGS += -DEGL_NEEDS_FNW
-
-# Kernel information
 TARGET_KERNEL_SOURCE := kernel/sony/msm7x27a
-# Remove the hash from below line when building for mesona
-# TARGET_KERNEL_SOURCE := kernel/sony/mesona
 BOARD_KERNEL_BASE := 0x00200000
 BOARD_RECOVERY_BASE := 0x00200000
 BOARD_KERNEL_PAGESIZE := 2048
@@ -54,35 +66,38 @@ TARGET_QCOM_HDMI_OUT := false
 TARGET_USES_ION := true
 TARGET_NO_HW_VSYNC := true
 BOARD_ADRENO_DECIDE_TEXTURE_TARGET := true
-BOARD_EGL_CFG := device/sony/tamsui-common/config/egl.cfg
-BOARD_USE_MHEAP_SCREENSHOT := true
 TARGET_DOESNT_USE_FENCE_SYNC := true
-QCOM_BSP_WITH_GENLOCK := true
+TARGET_USES_QCOM_BSP := true
+BOARD_EGL_CFG := device/sony/tamsui-common/rootdir/system/etc/egl.cfg
 
 # libEGL: allow devices to workaround Google bug 10194508
 BOARD_EGL_WORKAROUND_BUG_10194508 := true
 
-# Device specific hardware abstract layers 
 TARGET_PROVIDES_LIBLIGHT := true
 
+# Audio
+TARGET_QCOM_AUDIO_VARIANT := caf
+TARGET_PROVIDES_LIBAUDIO := true
+COMMON_GLOBAL_CFLAGS += -DMR0_AUDIO_BLOB
+BOARD_USES_LEGACY_ALSA_AUDIO := true
+COMMON_GLOBAL_CFLAGS += -DNO_TUNNELED_SOURCE
+
+# Video
+TARGET_QCOM_DISPLAY_VARIANT := legacy
+TARGET_QCOM_LEGACY_OMX := true
+TARGET_QCOM_MEDIA_VARIANT := legacy
+TARGET_ENABLE_QC_AV_ENHANCEMENTS := true
+
 # Camera
-COMMON_GLOBAL_CFLAGS += -DICS_CAMERA_BLOB -DQCOM_NO_SECURE_PLAYBACK -DQCOM_ICS_DECODERS
-COMMON_GLOBAL_CFLAGS += -DQCOM_ICS_COMPAT
-BOARD_USES_QCOM_LEGACY_CAM_PARAMS := true
-COMMON_GLOBAL_CFLAGS += -DNEEDS_VECTORIMPL_SYMBOLS
-TARGET_DISABLE_ARM_PIE := true
+COMMON_GLOBAL_CFLAGS += -DSONY_CAMERA -DQCOM_SONY_HARDWARE
+COMMON_GLOBAL_CFLAGS += -DICS_CAMERA_BLOB -DQCOM_ICS_DECODERS -DQCOM_ICS_COMPAT
+COMMON_GLOBAL_CFLAGS += -DQCOM_NO_SECURE_PLAYBACK -DNEEDS_VECTORIMPL_SYMBOLS 
 BOARD_NEEDS_MEMORYHEAPPMEM := true
 BOARD_USES_PMEM_ADSP := true
 
 # QCOM hardware
 BOARD_USES_QCOM_HARDWARE := true
 BOARD_USES_QCOM_LIBS := true
-
-# Add h/w acceleration in browser
-WITH_JIT := true
-ENABLE_JSC_JIT := true
-JS_ENGINE := v8
-HTTP := chrome
 
 # GPS
 BOARD_USES_QCOM_LIBRPC := true
@@ -99,11 +114,10 @@ TARGET_NEEDS_BLUETOOTH_INIT_DELAY := true
 BOARD_HAS_VIBRATOR_IMPLEMENTATION := ../../device/sony/tamsui-common/vibrator/vibrator.c
 
 # Custom boot
-TARGET_RECOVERY_PRE_COMMAND := "touch /cache/recovery/boot; \#"
+TARGET_NO_SEPARATE_RECOVERY := true
+TARGET_RECOVERY_PRE_COMMAND := "/sbin/pre-recovery.sh"
 BOARD_CUSTOM_BOOTIMG_MK := device/sony/tamsui-common/custombootimg.mk
-TARGET_RELEASETOOL_OTA_FROM_TARGET_SCRIPT := device/sony/tamsui-common/releasetools/semc_ota_from_target_files
 BOARD_CUSTOM_RECOVERY_KEYMAPPING := ../../device/sony/tamsui-common/recovery/recovery-keys.c
-
 BOARD_UMS_LUNFILE := "/sys/devices/platform/msm_hsusb/gadget/lun0/file"
 TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/devices/platform/msm_hsusb/gadget/lun0/file"
 
@@ -112,7 +126,6 @@ TARGET_BOOTANIMATION_PRELOAD := true
 TARGET_BOOTANIMATION_TEXTURE_CACHE := true
 
 # RIL
-BOARD_USES_LEGACY_RIL := true
 BOARD_RIL_CLASS := ../../../device/sony/tamsui-common/ril/
 
 # Web Rendering
